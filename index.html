@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genomic Prediction Research Summary</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- Add any additional meta tags, CSS files, or JavaScript files here -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="container">
+  <h1>Genomic Prediction Research Summary</h1>
+  <h2>By: Patrick Gibbs | The University of Melbourne | pggib@student.unimelb.edu.au</h2>
+  
+  This document contains a summary of select directions in my ongoing Master's Research Project, which will form a 10-20 thousand word thesis at the end of 2023. I present here a project introduction and two specific preliminary results that I think are interesting and indicative of my research theme.
+  
+  <!-- Your website content goes here -->
+  <h2>Introduction</h2>
+  <p>
+    Progress in sequencing technologies has enabled genomic prediction (GP), 
+    the inference of heritable traits from DNA sequence data in potentially any organism, and strikes at the fundamental
+    goal of genetics – linking genotype to phenotype.
+  </p>
+  <p>
+    The primary challenge facing GP is that for any real-world dataset, the number of markers, 
+    usually single nucleotide polymorphisms (SNPs), is far greater than the number of sequenced organisms.
+    Many genomic markers have negligible effects on the phenotype, and characterizing interactions among 
+    influential markers is often intractable with few observations. Additionally, the genomic architectures of heritable 
+    traits vary significantly, which means a generalized approach to genomic prediction is limiting. Consequently, 
+    genomic prediction is constrained to simple linear models, and predictions are made with low statistical power.
+  </p>
+  My thesis addresses these limitations by examining alternative genome representations for genomic prediction. Analysis is conducted using a variety of Arabidopsis thaliana traits, 
+  with monogenic, oligogenic, and polygenic architectures.
+  To represent the genome, I investigate genome similarity, principal component analysis, and lasso-based feature selection. I test these genome representations using penalised regression, artificial 
+  neural network (ANN) frameworks and random forest, focusing specifically on the interplay between model parameterization, feature set construction, and the genetic underpinning of the investigated trait.
+
+  <h2>Project Aims</h2>
+  I use Arabidopsis thaliana to investigate the high-level research directions:
+  <ul>
+    <li>How can the genome be represented parsimoniously for the purpose of genomic prediction?</li>
+    <li>How does the genetic architecture of a trait affect the prediction accuracy of different genome representations / prediction models?</li>
+  </ul>
+
+  <h2>Data Set</h2>
+  My project uses a range of traits, all publicly available from <a href="https://arapheno.1001genomes.org/phenotypes/">AraPheno</a> (table 1, figure 1).
+  The genetic architecture of each trait is qualitatively classified as either:
+  <ul>
+    <li>Monogenic: There is a single genomic region that is highly correlated with the trait.</li>
+    <li>Oligogenic: There are multiple loci that are each highly correlated with the trait.</li>
+    <li>Polygenic/Complex: The trait is highly heritable, but not clearly correlated with specific loci. Usually growth rate/yield traits.</li>
+  </ul>
+
+  <style type="text/css">
+    .tg  {border-collapse:collapse;border-spacing:0;}
+    .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+      overflow:hidden;padding:10px 5px;word-break:normal;}
+    .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+      font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+    .tg .tg-16gp{background-color:#ffffff;font-family:"Times New Roman", Times, serif !important;text-align:left;vertical-align:top}
+    .tg .tg-lthy{background-color:#ffffff;font-family:"Times New Roman", Times, serif !important;font-weight:bold;text-align:left;
+      vertical-align:top}
+    .tg .tg-12ay{background-color:#ffffff;color:#00E;font-family:"Times New Roman", Times, serif !important;text-align:left;
+      vertical-align:top}
+    </style>
+    <table class="tg">
+    <caption>Table 1: traits investigated.</caption>
+    <thead>
+      <tr>
+        <th class="tg-lthy"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000">Trait Name</span></th>
+        <th class="tg-lthy"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000">Trait Description</span></th>
+        <th class="tg-lthy"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000">Genetic Architecture</span></th>
+        <th class="tg-lthy"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000">Number of Accessions</span></th>
+        <th class="tg-lthy"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000">Reference</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Flowering Time</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">The number of days it takes each accession to flower after it has been planted</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Polygenetic</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">1058</span></td>
+        <td class="tg-12ay"><a href="https://www.zotero.org/google-docs/?hlP7bq" target="_blank" rel="noopener noreferrer"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">1001genomes, Consortium, 2016</span></a></td>
+      </tr>
+      <tr>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Seed Weight</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">The average weight of seeds produced by the accession</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Polygenic</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">454</span></td>
+        <td class="tg-12ay"><a href="https://www.zotero.org/google-docs/?FMykip" target="_blank" rel="noopener noreferrer"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">(Y. Li, 2016)</span></a></td>
+      </tr>
+      <tr>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Herbivore resistance</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">The concentration of molecule G2P which prevents herbivory</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Oligogenic</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">595</span></td>
+        <td class="tg-12ay"><a href="https://www.zotero.org/google-docs/?ygQMVV" target="_blank" rel="noopener noreferrer"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">(Brachi et al., 2015)</span></a></td>
+      </tr>
+      <tr>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Metabolite Concentration</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Concentration of Metabolite </span><a href="https://arapheno.1001genomes.org/phenotype/144/" target="_blank" rel="noopener noreferrer"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">M216T665</span></a></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">Monogenic</span></td>
+        <td class="tg-16gp"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">405</span></td>
+        <td class="tg-12ay"><a href="https://www.zotero.org/google-docs/?0XXecw" target="_blank" rel="noopener noreferrer"><span style="font-weight:400;font-style:normal;text-decoration:none;color:#000">(X. Li, 2016)</span></a></td>
+      </tr>
+    </tbody>
+    </table>
+
+    <br>
+
+    <style>
+        .resized-image {
+          width: 40vw; /* Set the desired width */
+          height: auto;
+          
+          padding: 10px; /* Adjust the desired padding */
+        border: 1px solid #000000; /* Add a border around the container */
+            display: inline-block;/* Automatically adjust the height to maintain the aspect ratio */
+        }
+    </style>
+    <center>
+        <figure class="image-container">
+            <img class="resized-image" src="gwas_combined (2).png">
+            <figcaption>Figure 1. GWAS for each Arabidopsis thaliana trait investigated in the project</figcaption>
+          </figure>
+        </center>
+  <h2>Models</h2>
+  <h3>Linear Models</h3>
+  <p style="margin-left: 40px;">
+    <b>Ridge Regression:</b><br>
+    Ridge regression is a linear regression model that uses L2 regularization to penalize the effects. It minimizes the following loss function:
+    \[
+    \min_{\beta} \left\{ \frac{1}{n} ||y - X\beta||^2_2 + \lambda||\beta||^2_2 \right\}
+    \]
+    where \(\lambda\) is the regularization parameter fit iteratively using cross-validation, \(X\) is the feature matrix, and \(y\) is the response vector.
+    Note that Ridge Regression is equivalent to GBLUP in the context of genomic prediction, and it assumes that the effects are normally distributed.
+    <br>
+    <br>
+    <b>Lasso Regression:</b><br>
+    Lasso regression is a linear regression model that uses L1 regularization to penalize the effects. It minimizes the following loss function:
+    \[
+    \min_{\beta} \left\{ \frac{1}{n} ||y - X\beta||^2_2 + \lambda||\beta||_1 \right\}
+    \]
+    Given L1 shrinkage, lasso regression tends to produce sparse solutions – effects are assumed to follow a Laplace distribution.
+    <br>
+  </p>
+  
+  <h3>Random Forest</h3>
+  <p>
+    Random forest ensembles many decision trees, each trained on a random subset of the data. This allows the model to capture non-linear relationships between features and the response variable.
+  </p> 
+
+  <h2>Selected Preliminary Findings</h2>
+  <h3>Baseline Results</h3>
+  Using genome-wide markers ridge regression is the best-performing model for polygenic traits such as flowering time. For oligogenic/monogenic traits, lasso regression is the best-performing. Elastic net regression was also tested but converged to either lasso or ridge regression for all traits.
+
+  <h3>Principal Component Representation of the Genome</h3>
+  PCA is commonly used to reduce the dimensionality of genomic data. Here, a feature set is transformed into an orthogonal basis ('principal component') such that each principal component captures the maximal variance in the data.
+
+  <p>
+    <b>PCA Ridge Regression</b>
+    <br>
+    Previous works have explored the relationship between PCA and ridge regression/GBLUP and showed that they are closely linked mathematically through singular value decomposition (SVD) (Hastie et al., 2009, p.66). In summary, a set of predictions \(y_{ridge}\) using ridge regression can be written as follows:
+    
+    \[
+    \hat{y}_{ridge} = U_{test}A_{ridge}U_{train}^Ty_{train}
+    \]
+
+    Where U is the matrix of principal components of the feature set X, and A is a diagonal matrix defined as follows:
+    
+    \[
+    A_{ridge}= \text{diag}\left(\frac{s^2_i}{s^2_i+\lambda}\right)
+    \]
+
+    Where \(s_i\) is the loading of each principal component / eigenvalue of the variance-covariance matrix of X, and λ scales the amount of penalization.
+    
+    <br>
+    <br>
+    This relationship has been exploited by Hastie & Tibshirani (2004) to implement efficient computation of ridge regression parameters for high-dimensional data. I contend that this has the implication that applying ridge regression to principal components of X is equivalent to ridge regression on the untransformed matrix X. This is because \(y_{ridge}\) can be expressed using only U as predictors (equation 1). If PCA is applied to X, then U in equation 1 becomes the principal components of U, or PCA(PCA(X)). Given that PCA(X) = PCA(PCA(X)), applying PCA to X has no effect on \(y_{ridge}\).
+
+    <br>
+    <br>
+    The relationship was confirmed experimentally by applying ridge regression to PCA-transformed data and comparing the results to ridge regression on the untransformed data. Removing the principal components with low variance only reduced the prediction accuracy.
+
+    This mathematical analysis appears to be overlooked by past publications (Calus et al., 2014) that have tested PCA-Ridge Regression for genomic prediction but not released the mathematical equivalence.
+  </p>
+
+  <p>
+    <h4>PCA Lasso Regression</h4>
+    Because there is no closed-form solution to find the parameters for lasso (or elastic net) regression, it is not possible to conduct the same mathematical analysis. Previous studies have combined PCA and Lasso (PCA-LASSO) for other machine learning tasks, e.g., (D’Angelo et al., 2009), and found PCA-Lasso and Lasso to perform similarly. I confirmed this experimentally for genomic prediction using the same datasets as above.
+  </p>
+
+  In the context of regression, PCA representation of the genome is not useful. In fact, PCA keeping the top principal components to reduce the dimensionality of the data is a form of penalization closely linked to ridge regression through the SVD. Penalized linear models have built-in variable selection, and using PCA in combination is redundant.
+
+  <h3>Lasso Feature Selection Genome Representation</h3>
+
+  The dimensionality of the genome can be reduced using lasso regression. This is achieved by fitting lasso regression to the genome and removing the features with zero coefficients. I tested this dimensionality reduction technique in combination with random forest. The motivation is that the most significantly associated regions of a genome might interact with each other. I found that this method did not increase prediction accuracy for polygenic and monogenic traits. However, it did enhance prediction accuracy for oligogenic traits compared to the baseline linear model (r2 0.4 vs r2 0.47). This demonstrates that nonlinear prediction models can be effective for genomic prediction given the appropriate trait and data representation. I do not believe it is possible to effectively parameterize all the interactions that might be occurring to produce the flowering time phenotype because the effect of each of these interactions is small. Nevertheless, when a trait has a few significantly associated regions, it is likely that these regions interact. If this interaction has a strong enough effect on the phenotype, my research demonstrates it can be effectively parameterized.
+
+
+    <h2>References</h2>
+
+    Calus, M. P., Huang, H., Vereijken, A., Visscher, J., ten Napel, J., & Windig, J. J. (2014). Genomic prediction based on data from three layer lines: A comparison between linear methods. Genetics Selection Evolution, 46(1), 57. https://doi.org/10.1186/s12711-014-0057-5
+
+    <br>    
+    <br>
+    D’Angelo, G. M., Rao, D., & Gu, C. C. (2009). Combining least absolute shrinkage and selection operator (LASSO) and principal-components analysis for detection of gene-gene interactions in  genome-wide association studies. BMC Proceedings, 3 Suppl 7(Suppl 7), S62. https://doi.org/10.1186/1753-6561-3-s7-s62
+    <br>
+    <br>
+  
+    Hastie, T., Tibshirani, R., Friedman, J. H., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp. 1-758). New York: springer.
+    <br>
+    <br>
+    Hastie, T., & Tibshirani, R. (2004). Efficient quadratic regularization for expression arrays. Biostatistics, 5(3), 329-340.
+    <br>
+    <br>
+
+   
+  <br>
+</body>
+</html>
